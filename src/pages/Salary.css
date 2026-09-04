@@ -1,0 +1,43 @@
+.salary-page {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.card-grid-salary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+}
+
+.salary-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+  background-color: #ffffff;
+  padding: 14px 18px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-color);
+}
+
+.salary-count-info {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+@media print {
+  /* Tối ưu hóa khi in bảng lương */
+  .sidebar, .top-header, .page-actions, .salary-toolbar, .stat-card {
+    display: none !important;
+  }
+  .app-layout, .main-viewport, .main-content {
+    padding: 0 !important;
+    margin: 0 !important;
+    width: 100% !important;
+  }
+  .table-container {
+    border: 1px solid #000 !important;
+  }
+}

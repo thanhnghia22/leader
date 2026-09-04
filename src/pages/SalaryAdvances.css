@@ -1,0 +1,57 @@
+.salary-advances-page {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.advances-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+  background-color: #ffffff;
+  padding: 16px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-color);
+}
+
+.advances-filters {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.advances-total-badge {
+  background-color: var(--warning-bg);
+  border: 1px solid var(--warning-border);
+  padding: 6px 14px;
+  border-radius: var(--radius-sm);
+  font-size: 0.875rem;
+  color: #92400e;
+}
+
+.advances-total-badge strong {
+  font-size: 1rem;
+  color: #b45309;
+  margin-left: 4px;
+}
+
+.advance-date-cell {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+
+.advance-note {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  max-width: 250px;
+  display: inline-block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
