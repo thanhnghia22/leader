@@ -1,8 +1,8 @@
 import axios from 'axios';
 
-// Cấu hình Axios instance mặc định trỏ về backend Node.js + Express
+// Cấu hình Axios instance mặc định trỏ về /api (tự động đồng bộ cổng 3000 hoặc 5000)
 const api = axios.create({
-  baseURL: 'http://localhost:5000/api',
+  baseURL: '/api',
   timeout: 10000,
   headers: {
     'Content-Type': 'application/json',

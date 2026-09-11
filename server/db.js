@@ -1,71 +1,66 @@
-import { execFile } from 'child_process';
+import 'dotenv/config';
+import mysql from 'mysql2/promise';
 
-const DB_CONFIG = {
-  host: 'localhost',
+const LOCAL_CONFIG = {
+  host: '127.0.0.1',
+  port: 3306,
   user: 'root',
   password: '123456',
   database: 'cham_cong_leader',
+  waitForConnections: true,
+  connectionLimit: 10,
+  queueLimit: 0,
+  charset: 'utf8mb4',
+  ssl: false,
+  connectTimeout: 4000,
 };
 
-/**
- * Thực thi câu lệnh SQL trực tiếp vào MySQL Server 8.0 (MySQL Workbench)
- * Hỗ trợ 100% tiếng Việt UTF-8 không lỗi font.
- */
-export function query(sql) {
-  return new Promise((resolve, reject) => {
-    execFile(
-      'mysql.exe',
-      [
-        '--default-character-set=utf8mb4',
-        '-u',
-        DB_CONFIG.user,
-        `-p${DB_CONFIG.password}`,
-        '-D',
-        DB_CONFIG.database,
-        '--batch',
-        '-e',
-        sql,
-      ],
-      { encoding: 'utf8', maxBuffer: 10 * 1024 * 1024 },
-      (err, stdout, stderr) => {
-        if (err) {
-          // Bỏ qua cảnh báo password insecure trên stderr của MySQL
-          if (stderr && !stderr.includes('Using a password') && !stderr.includes('Switching to')) {
-            return reject(new Error(stderr));
-          }
-        }
-        if (!stdout || !stdout.trim()) {
-          return resolve([]);
-        }
+const isRemote =
+  Boolean(process.env.MYSQLHOST && process.env.MYSQLHOST !== '127.0.0.1' && process.env.MYSQLHOST !== 'localhost') ||
+  Boolean(process.env.DB_HOST && process.env.DB_HOST !== '127.0.0.1' && process.env.DB_HOST !== 'localhost');
 
-        const lines = stdout
-          .split('\n')
-          .map((l) => l.replace(/\r$/, ''))
-          .filter((l) => Boolean(l.trim()) && !l.startsWith('mysql:'));
+const REMOTE_CONFIG = {
+  host: process.env.MYSQLHOST || process.env.DB_HOST || '127.0.0.1',
+  port: Number(process.env.MYSQLPORT || process.env.DB_PORT || 3306),
+  user: process.env.MYSQLUSER || process.env.DB_USER || 'root',
+  password: process.env.MYSQLPASSWORD || process.env.DB_PASSWORD || '123456',
+  database: process.env.MYSQLDATABASE || process.env.DB_NAME || 'cham_cong_leader',
+  waitForConnections: true,
+  connectionLimit: 10,
+  queueLimit: 0,
+  charset: 'utf8mb4',
+  ssl: isRemote ? { rejectUnauthorized: false } : false,
+  connectTimeout: 8000,
+};
 
-        if (lines.length === 0) return resolve([]);
+let pool = mysql.createPool(REMOTE_CONFIG);
+let isUsingFallback = false;
 
-        const headers = lines[0].split('\t').map((h) => h.trim());
-        const rows = lines.slice(1).map((line) => {
-          const vals = line.split('\t');
-          const obj = {};
-          headers.forEach((h, i) => {
-            const v = vals[i] !== undefined ? vals[i].trim() : '';
-            obj[h] = v === 'NULL' ? null : v;
-          });
-          return obj;
-        });
-
-        resolve(rows);
+export async function query(sql) {
+  try {
+    const [rows] = await pool.query(sql);
+    return rows;
+  } catch (error) {
+    // Nếu kết nối remote (như Railway) bị timeout hoặc rớt mạng -> Tự động chuyển về MySQL Workbench cục bộ
+    if (!isUsingFallback && REMOTE_CONFIG.host !== '127.0.0.1' && REMOTE_CONFIG.host !== 'localhost') {
+      console.warn(`[DB WARNING] Không thể kết nối tới MySQL Remote (${REMOTE_CONFIG.host}): ${error.message}`);
+      console.log(`[DB INFO] Tự động chuyển sang MySQL cục bộ (127.0.0.1:3306 - cham_cong_leader)...`);
+      try {
+        pool = mysql.createPool(LOCAL_CONFIG);
+        isUsingFallback = true;
+        const [rows] = await pool.query(sql);
+        return rows;
+      } catch (localError) {
+        console.error('Local Database error:', localError.message);
+        throw localError;
       }
-    );
-  });
+    }
+    console.error('Database error:', error.message);
+    throw error;
+  }
 }
 
-/**
- * Thoát chuỗi an toàn chống SQL Injection cơ bản
- */
 export function escapeString(str) {
   if (str === null || str === undefined) return "''";
-  return `'${String(str).replace(/'/g, "\\'")}'`;
+  return `'${String(str).replace(/\\/g, '\\\\').replace(/'/g, "\\'")}'`;
 }
