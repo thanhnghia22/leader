@@ -130,14 +130,7 @@ function openPrintWindow(htmlContent, title = 'Xuat_Bao_Cao_PDF', orientation = 
         </style>
       </head>
       <body>
-        <table class="header-table">
-         
-          </tr>
-        </table>
-
         ${htmlContent}
-
-    
 
         <script>
           window.onload = function() {
@@ -307,8 +300,8 @@ export function exportAttendanceToPdf(employees, attendanceRecords, advances = [
     .join('');
 
   const html = `
-    <div class="report-title">BẢNG TỔNG HỢP CHẤM CÔNG & TẠM ỨNG LƯƠNG</div>
-    <div class="report-subtitle">Kỳ công: Tháng ${monthStr} / ${year} (Ca chuẩn: Chef = 7h, Phục vụ = 5h. Ký hiệu: ✓ = Đủ ca chuẩn, [X]h = Số giờ thực tế, OFF = Nghỉ)</div>
+    <div class="report-title">BẢNG CHẤM CÔNG</div>
+    <div class="report-subtitle">Tháng ${monthStr} / ${year}</div>
 
     <table class="data-table">
       <thead>
