@@ -306,7 +306,7 @@ export function Attendance() {
                 ))}
 
                 {/* Các cột tổng kết bên phải: Ngày làm, Giờ lẻ, OFF, Tạm ứng */}
-                <th className="summary-col col-work" title="Số ngày làm quy đổi đủ ca chuẩn (Chef 7h / Phục vụ 5h)">
+                <th className="summary-col col-work" title="Số ngày làm quy đổi đủ ca chuẩn (Chef 8h / Phục vụ 5h)">
                   Ngày làm
                 </th>
                 <th className="summary-col col-extra-hours" title="Tổng số giờ lẻ (dư sau quy đổi ngày làm)">
@@ -383,7 +383,7 @@ export function Attendance() {
                               width: 'fit-content'
                             }}
                           >
-                            {isChef ? 'Chef (7h)' : 'Phục vụ (5h)'}
+                            {isChef ? 'Chef (8h: 2h-10h)' : 'Phục vụ (5h: 5h-10h)'}
                           </span>
                         </div>
                       </td>
@@ -472,13 +472,13 @@ export function Attendance() {
                 style={{
                   fontSize: '0.75rem',
                   fontWeight: 600,
-                  color: getStandardShiftHours(selectedCell.employee.position) === 7 ? '#c2410c' : '#0369a1',
-                  backgroundColor: getStandardShiftHours(selectedCell.employee.position) === 7 ? '#ffedd5' : '#e0f2fe',
+                  color: getStandardShiftHours(selectedCell.employee.position) === CHEF_SHIFT_HOURS ? '#c2410c' : '#0369a1',
+                  backgroundColor: getStandardShiftHours(selectedCell.employee.position) === CHEF_SHIFT_HOURS ? '#ffedd5' : '#e0f2fe',
                   padding: '2px 8px',
                   borderRadius: '4px'
                 }}
               >
-                {getStandardShiftHours(selectedCell.employee.position) === 7 ? '👨‍🍳 Chef (Ca 7h)' : '🛎️ Phục vụ (Ca 5h)'}
+                {getStandardShiftHours(selectedCell.employee.position) === CHEF_SHIFT_HOURS ? '👨‍🍳 Chef (Ca 8h: 02:00 - 10:00)' : '🛎️ Phục vụ (Ca 5h: 05:00 - 10:00)'}
               </span>
             </div>
           ) : 'Chấm công'
@@ -607,9 +607,9 @@ export function Attendance() {
               <div className="info-notice">
                 <Clock size={16} className="text-warning" />
                 <span>
-                  {getStandardShiftHours(selectedCell?.employee?.position) === 7
-                    ? 'Chef ca 7h: Ví dụ về sớm 1 tiếng tính 6 tiếng; tăng ca 3h-11h tính 8 tiếng (hệ thống tự động bù trừ vào tổng công).'
-                    : 'Phục vụ ca 5h: Ví dụ làm từ 5h đến 9h (về sớm 9h) tính 4 tiếng.'}
+                  {getStandardShiftHours(selectedCell?.employee?.position) === CHEF_SHIFT_HOURS
+                    ? 'Chef ca 8h (02:00 - 10:00): Ví dụ về sớm 9h tính 7 tiếng (hệ thống tự động bù trừ vào tổng công).'
+                    : 'Phục vụ ca 5h (05:00 - 10:00): Ví dụ về sớm 9h tính 4 tiếng (hệ thống tự động bù trừ vào tổng công).'}
                 </span>
               </div>
 

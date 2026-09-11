@@ -193,11 +193,11 @@ export function Employees() {
         const isChef = String(pos || '').toLowerCase().includes('chef');
         return isChef ? (
           <span style={{ backgroundColor: '#ffedd5', color: '#c2410c', fontWeight: 600, padding: '4px 10px', borderRadius: '6px', fontSize: '0.8rem', display: 'inline-block' }}>
-            👨‍🍳 Chef (Ca 7h)
+            👨‍🍳 Chef (Ca 8h: 2h-10h)
           </span>
         ) : (
           <span style={{ backgroundColor: '#e0f2fe', color: '#0369a1', fontWeight: 600, padding: '4px 10px', borderRadius: '6px', fontSize: '0.8rem', display: 'inline-block' }}>
-            🛎️ Phục vụ (Ca 5h)
+            🛎️ Phục vụ (Ca 5h: 5h-10h)
           </span>
         );
       },
@@ -366,13 +366,13 @@ export function Employees() {
                 backgroundColor: '#fff'
               }}
             >
-              <option value="Chef">👨‍🍳 Chef (Ca chuẩn 7 tiếng)</option>
-              <option value="Phục vụ">🛎️ Phục vụ (Ca chuẩn 5 tiếng)</option>
+              <option value="Chef">👨‍🍳 Chef (Ca chuẩn 8 tiếng: 02:00 - 10:00)</option>
+              <option value="Phục vụ">🛎️ Phục vụ (Ca chuẩn 5 tiếng: 05:00 - 10:00)</option>
             </select>
             <span style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '4px', display: 'block' }}>
               {formData.position === 'Chef'
-                ? '• Chef: ca chuẩn 7h/ngày. Lương giờ = Lương ngày / 7'
-                : '• Phục vụ: ca chuẩn 5h/ngày. Lương giờ = Lương ngày / 5'}
+                ? '• Chef: ca chuẩn 8h/ngày (02:00 - 10:00). Lương giờ = Lương ngày / 8'
+                : '• Phục vụ: ca chuẩn 5h/ngày (05:00 - 10:00). Lương giờ = Lương ngày / 5'}
             </span>
           </div>
 

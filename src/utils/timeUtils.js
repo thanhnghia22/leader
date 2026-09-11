@@ -6,12 +6,12 @@
  * - Tổng kết công: [Số ngày làm] và [Số giờ lẻ] (ví dụ: 2 ngày 4 tiếng)
  */
 
-export const CHEF_SHIFT_HOURS = 7;     // Ca Chef chuẩn: 7 tiếng (ví dụ: 04:00 - 11:00 hoặc 03:00 - 10:00)
-export const SERVICE_SHIFT_HOURS = 5;  // Ca Phục vụ chuẩn: 5 tiếng (ví dụ: 05:00 - 10:00)
+export const CHEF_SHIFT_HOURS = 8;     // Ca Chef chuẩn: 8 tiếng (02:00 - 10:00)
+export const SERVICE_SHIFT_HOURS = 5;  // Ca Phục vụ chuẩn: 5 tiếng (05:00 - 10:00)
 export const STANDARD_SHIFT_HOURS = 5; // Tương thích ngược
 
 /**
- * Lấy số giờ ca chuẩn theo chức vụ: Chef = 7h, Phục vụ = 5h
+ * Lấy số giờ ca chuẩn theo chức vụ: Chef = 8h (02:00 - 10:00), Phục vụ = 5h (05:00 - 10:00)
  */
 export function getStandardShiftHours(position = '') {
   if (!position) return SERVICE_SHIFT_HOURS;
@@ -28,16 +28,16 @@ export function getStandardShiftHours(position = '') {
 export function getDefaultShiftTimes(position = '') {
   const isChef = getStandardShiftHours(position) === CHEF_SHIFT_HOURS;
   if (isChef) {
-    return { startTime: '04:00', endTime: '11:00', hours: CHEF_SHIFT_HOURS, label: 'Chef (Ca 7 tiếng)' };
+    return { startTime: '02:00', endTime: '10:00', hours: CHEF_SHIFT_HOURS, label: 'Chef (Ca 8 tiếng: 02:00 - 10:00)' };
   }
-  return { startTime: '05:00', endTime: '10:00', hours: SERVICE_SHIFT_HOURS, label: 'Phục vụ (Ca 5 tiếng)' };
+  return { startTime: '05:00', endTime: '10:00', hours: SERVICE_SHIFT_HOURS, label: 'Phục vụ (Ca 5 tiếng: 05:00 - 10:00)' };
 }
 
 /**
  * Tính số ngày làm tròn ca và số giờ lẻ dựa trên tổng số giờ làm việc
  * Ví dụ:
- * - Chef (7h): 20 giờ -> 2 ngày 6 tiếng (20 / 7 = 2 dư 6)
- * - Chef (7h): 21 giờ -> 3 ngày 0 tiếng (21 / 7 = 3 dư 0)
+ * - Chef (8h): 20 giờ -> 2 ngày 4 tiếng (20 / 8 = 2 dư 4)
+ * - Chef (8h): 24 giờ -> 3 ngày 0 tiếng (24 / 8 = 3 dư 0)
  * - Phục vụ (5h): 14 giờ -> 2 ngày 4 tiếng (14 / 5 = 2 dư 4)
  */
 export function calculateWorkSummaryFromHours(totalHours = 0, standardHours = 5) {
@@ -64,7 +64,10 @@ export function calculateShiftHours(startTime = '05:00', endTime = '10:00') {
   if (!startTime || !endTime) return STANDARD_SHIFT_HOURS;
   const startMin = timeToMinutes(startTime);
   const endMin = timeToMinutes(endTime);
-  const diffMinutes = Math.max(0, endMin - startMin);
+  let diffMinutes = endMin - startMin;
+  if (diffMinutes < 0) {
+    diffMinutes += 24 * 60;
+  }
   return Math.round((diffMinutes / 60) * 10) / 10;
 }
 

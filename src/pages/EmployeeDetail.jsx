@@ -39,6 +39,7 @@ import {
   STANDARD_SHIFT_HOURS,
   CHEF_SHIFT_HOURS,
   getStandardShiftHours,
+  getDefaultShiftTimes,
   calculateWorkSummaryFromHours
 } from '../utils/timeUtils';
 import './EmployeeDetail.css';
@@ -217,7 +218,10 @@ export function EmployeeDetail() {
       key: 'hours',
       render: (_, row) =>
         row.status === 'partial' ? (
-          <span className="time-badge">{row.startTime || '05:00'} - {row.endTime || '09:00'} ({row.workHours} tiếng)</span>
+          <span className="time-badge">
+            {row.startTime || getDefaultShiftTimes(employee?.position).startTime} -{' '}
+            {row.endTime || getDefaultShiftTimes(employee?.position).endTime} ({row.workHours} tiếng)
+          </span>
         ) : (
           <span className="text-muted">Nghỉ cả ngày</span>
         ),
