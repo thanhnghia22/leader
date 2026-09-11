@@ -27,6 +27,7 @@ export const authService = {
         username,
         name: username === 'leader' ? 'Hòa Không Móc' : 'Quản Trị Viên',
         role: 'leader',
+        avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=200&q=80',
       };
       const token = 'mock_jwt_token_leader_' + Date.now();
       localStorage.setItem('token', token);
@@ -54,6 +55,22 @@ export const authService = {
 
   isAuthenticated() {
     return !!localStorage.getItem('token');
+  },
+
+  async updateAvatar(username, avatar) {
+    if (USE_REAL_API) {
+      const res = await api.post('/auth/avatar', { username, avatar });
+      const current = this.getCurrentUser();
+      if (current) {
+        current.avatar = avatar;
+        localStorage.setItem('currentUser', JSON.stringify(current));
+      }
+      return res.data;
+    }
+    const current = this.getCurrentUser() || {};
+    current.avatar = avatar;
+    localStorage.setItem('currentUser', JSON.stringify(current));
+    return { success: true, avatar };
   },
 };
 

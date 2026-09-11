@@ -110,8 +110,19 @@ export async function handleApiRequest(req, res, next) {
           username: u.username,
           name: u.ho_ten,
           role: String(u.role || 'LEADER').toLowerCase(),
+          avatar: u.avatar || null,
         },
       });
+    }
+
+    if (pathname === '/api/auth/avatar' && method === 'POST') {
+      const body = await parseBody(req);
+      const avatar = body.avatar || '';
+      const username = body.username || 'leader01';
+      await query(
+        `UPDATE users SET avatar = ${escapeString(avatar)} WHERE username IN ('leader01', 'leader', ${escapeString(username)});`
+      );
+      return sendJson(res, 200, { success: true, avatar, message: 'Đã cập nhật ảnh đại diện thành công' });
     }
 
     // 2. EMPLOYEES: /api/employees

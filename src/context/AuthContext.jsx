@@ -27,6 +27,18 @@ export function AuthProvider({ children }) {
     setUser(null);
   };
 
+  const updateUser = (updatedFields) => {
+    setUser((prev) => {
+      const updated = { ...(prev || {}), ...updatedFields };
+      try {
+        localStorage.setItem('currentUser', JSON.stringify(updated));
+      } catch (e) {
+        console.error('Lưu currentUser thất bại', e);
+      }
+      return updated;
+    });
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -34,7 +46,8 @@ export function AuthProvider({ children }) {
         loading,
         isAuthenticated: !!user,
         login,
-        logout
+        logout,
+        updateUser,
       }}
     >
       {children}
