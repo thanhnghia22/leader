@@ -46,7 +46,7 @@ export function Login() {
           <div className="login-logo-icon">
             <Clock size={32} />
           </div>
-          <h1 className="login-title">HỆ THỐNG CHẤM CÔNG LEADER</h1>
+          <h1 className="login-title">ỐC LẮC CÔ MAI</h1>
           <p className="login-subtitle">Đăng nhập tài khoản quản lý để tiếp tục</p>
         </div>
 

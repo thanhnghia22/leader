@@ -221,7 +221,7 @@ export function Attendance() {
         <div>
           <h1 className="page-title">Bảng Chấm Công & Giờ Làm</h1>
           <p className="page-subtitle">
-            Ghi nhận ngày làm đủ ca (Chef 7h / Phục vụ 5h), ca lẻ giờ (về sớm / tăng ca) và ngày nghỉ (OFF)
+            Ghi nhận ngày làm đủ ca ,ngày nghỉ (OFF)
           </p>
         </div>
 
@@ -262,11 +262,11 @@ export function Attendance() {
         <div className="attendance-legend">
           <div className="legend-item">
             <span className="legend-badge badge-work">✓</span>
-            <span>Đủ ca (Chef 7h / Phục vụ 5h)</span>
+            <span>Đủ ca</span>
           </div>
           <div className="legend-item">
-            <span className="legend-badge badge-partial">6h / 8h</span>
-            <span>Giờ lẻ / Về sớm / Tăng ca</span>
+            <span className="legend-badge badge-partial"></span>
+            <span></span>
           </div>
           <div className="legend-item">
             <span className="legend-badge badge-off">OFF</span>
