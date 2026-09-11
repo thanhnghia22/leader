@@ -25,7 +25,7 @@ export const authService = {
       const user = {
         id: 1,
         username,
-        name: username === 'leader' ? 'Trần Quản Lý (Leader)' : 'Quản Trị Viên',
+        name: username === 'leader' ? 'Hòa Không Móc' : 'Quản Trị Viên',
         role: 'leader',
       };
       const token = 'mock_jwt_token_leader_' + Date.now();
