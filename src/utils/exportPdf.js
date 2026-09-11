@@ -131,39 +131,13 @@ function openPrintWindow(htmlContent, title = 'Xuat_Bao_Cao_PDF', orientation = 
       </head>
       <body>
         <table class="header-table">
-          <tr>
-            <td style="width: 50%;">
-              <div class="company-name">HỆ THỐNG QUẢN LÝ CHẤM CÔNG LEADER</div>
-              <div>Bộ phận: Quản lý Nhân sự & Tiền lương</div>
-            </td>
-            <td style="width: 50%;">
-              <div class="motto">CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</div>
-              <div class="sub-motto">Độc lập - Tự do - Hạnh phúc</div>
-              <div class="sub-motto" style="margin-top: 4px;">Ngày xuất: ${new Date().toLocaleDateString('vi-VN')}</div>
-            </td>
+         
           </tr>
         </table>
 
         ${htmlContent}
 
-        <div class="signature-section">
-          <table class="signature-table">
-            <tr>
-              <td>
-                <div class="sign-role">Người Lập Biểu</div>
-                <div class="sign-note">(Ký, ghi rõ họ tên)</div>
-              </td>
-              <td>
-                <div class="sign-role">Kế Toán Trưởng</div>
-                <div class="sign-note">(Ký, ghi rõ họ tên)</div>
-              </td>
-              <td>
-                <div class="sign-role">Quản Lý / Leader Duyệt</div>
-                <div class="sign-note">(Ký, đóng dấu nếu có)</div>
-              </td>
-            </tr>
-          </table>
-        </div>
+    
 
         <script>
           window.onload = function() {
