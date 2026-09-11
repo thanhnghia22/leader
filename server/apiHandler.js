@@ -77,9 +77,9 @@ export async function handleApiRequest(req, res, next) {
     return;
   }
 
-  // Chuẩn hóa pathname (hỗ trợ cả /api/xyz và /xyz khi gắn vào Vite middleware)
+  // Chuẩn hóa pathname (hỗ trợ cả /api/xyz, query ?url= và Vite middleware)
   const parsedUrl = new URL(req.url, 'http://localhost');
-  let pathname = parsedUrl.pathname;
+  let pathname = parsedUrl.searchParams.get('url') || parsedUrl.pathname;
   if (!pathname.startsWith('/api')) {
     pathname = '/api' + pathname;
   }

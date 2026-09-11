@@ -33,7 +33,8 @@ export function Login() {
       await login(username, password);
       navigate(from, { replace: true });
     } catch (err) {
-      setError(err.message || 'Đăng nhập thất bại. Vui lòng thử lại.');
+      const serverMsg = err.response?.data?.message || err.response?.data?.error;
+      setError(serverMsg || err.message || 'Đăng nhập thất bại. Vui lòng thử lại.');
     } finally {
       setLoading(false);
     }
