@@ -136,7 +136,7 @@ export async function handleApiRequest(req, res, next) {
       sql += 'ORDER BY id ASC;';
       const rows = await query(sql);
       const employees = rows.map((r) => {
-        let pos = r.chuc_vu || 'Phục vụ';
+        let pos = r.chuc_vu || 'Phục vụ (5h-10h)';
         const p = pos.toLowerCase();
         if (
           p.includes('chef') ||
@@ -148,8 +148,10 @@ export async function handleApiRequest(req, res, next) {
           r.ma_nhan_vien === 'NV003'
         ) {
           pos = 'Chef';
+        } else if (p.includes('6h') || p.includes('4h')) {
+          pos = 'Phục vụ (6h-10h)';
         } else {
-          pos = 'Phục vụ';
+          pos = 'Phục vụ (5h-10h)';
         }
         return {
           id: Number(r.id),
@@ -173,7 +175,7 @@ export async function handleApiRequest(req, res, next) {
         return sendJson(res, 404, { message: 'Không tìm thấy nhân viên' });
       }
       const r = rows[0];
-      let pos = r.chuc_vu || 'Phục vụ';
+      let pos = r.chuc_vu || 'Phục vụ (5h-10h)';
       const p = pos.toLowerCase();
       if (
         p.includes('chef') ||
@@ -185,8 +187,10 @@ export async function handleApiRequest(req, res, next) {
         r.ma_nhan_vien === 'NV003'
       ) {
         pos = 'Chef';
+      } else if (p.includes('6h') || p.includes('4h')) {
+        pos = 'Phục vụ (6h-10h)';
       } else {
-        pos = 'Phục vụ';
+        pos = 'Phục vụ (5h-10h)';
       }
       return sendJson(res, 200, {
         id: Number(r.id),

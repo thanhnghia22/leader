@@ -305,8 +305,21 @@
 
 .status-selector-grid-three {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-columns: repeat(3, 1fr);
   gap: 12px;
+}
+
+.status-selector-grid-four {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+
+@media (max-width: 640px) {
+  .status-selector-grid-three,
+  .status-selector-grid-four {
+    grid-template-columns: 1fr 1fr;
+  }
 }
 
 .status-choice-btn {

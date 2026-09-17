@@ -6,39 +6,50 @@
  * - Tổng kết công: [Số ngày làm] và [Số giờ lẻ] (ví dụ: 2 ngày 4 tiếng)
  */
 
-export const CHEF_SHIFT_HOURS = 8;     // Ca Chef chuẩn: 8 tiếng (02:00 - 10:00)
-export const SERVICE_SHIFT_HOURS = 5;  // Ca Phục vụ chuẩn: 5 tiếng (05:00 - 10:00)
-export const STANDARD_SHIFT_HOURS = 5; // Tương thích ngược
+export const CHEF_SHIFT_HOURS = 7;        // Ca Chef chuẩn: 7 tiếng (03:00 - 10:00)
+export const SERVICE_5H_SHIFT_HOURS = 5;   // Ca Phục vụ 5h-10h: 5 tiếng (05:00 - 10:00)
+export const SERVICE_4H_SHIFT_HOURS = 4;   // Ca Phục vụ 6h-10h: 4 tiếng (06:00 - 10:00)
+export const SERVICE_SHIFT_HOURS = 5;      // Mặc định phục vụ
+export const STANDARD_SHIFT_HOURS = 5;     // Tương thích ngược
 
 /**
- * Lấy số giờ ca chuẩn theo chức vụ: Chef = 8h (02:00 - 10:00), Phục vụ = 5h (05:00 - 10:00)
+ * Lấy số giờ ca chuẩn theo chức vụ:
+ * - Chef = 7h (03:00 - 10:00)
+ * - Phục vụ 6h-10h = 4h (06:00 - 10:00)
+ * - Phục vụ 5h-10h = 5h (05:00 - 10:00)
  */
 export function getStandardShiftHours(position = '') {
-  if (!position) return SERVICE_SHIFT_HOURS;
+  if (!position) return SERVICE_5H_SHIFT_HOURS;
   const p = String(position).toLowerCase().trim();
   if (p.includes('chef') || p.includes('bếp') || p.includes('nấu')) {
-    return CHEF_SHIFT_HOURS;
+    return CHEF_SHIFT_HOURS; // 7h
   }
-  return SERVICE_SHIFT_HOURS;
+  if (p.includes('6h') || p.includes('4h') || p.includes('4 tiếng')) {
+    return SERVICE_4H_SHIFT_HOURS; // 4h
+  }
+  return SERVICE_5H_SHIFT_HOURS; // 5h
 }
 
 /**
  * Lấy khung giờ ca chuẩn gợi ý theo chức vụ
  */
 export function getDefaultShiftTimes(position = '') {
-  const isChef = getStandardShiftHours(position) === CHEF_SHIFT_HOURS;
-  if (isChef) {
-    return { startTime: '02:00', endTime: '10:00', hours: CHEF_SHIFT_HOURS, label: 'Chef (Ca 8 tiếng: 02:00 - 10:00)' };
+  const std = getStandardShiftHours(position);
+  if (std === CHEF_SHIFT_HOURS) {
+    return { startTime: '03:00', endTime: '10:00', hours: CHEF_SHIFT_HOURS, label: 'Chef (Ca 7 tiếng: 03:00 - 10:00)' };
   }
-  return { startTime: '05:00', endTime: '10:00', hours: SERVICE_SHIFT_HOURS, label: 'Phục vụ (Ca 5 tiếng: 05:00 - 10:00)' };
+  if (std === SERVICE_4H_SHIFT_HOURS) {
+    return { startTime: '06:00', endTime: '10:00', hours: SERVICE_4H_SHIFT_HOURS, label: 'Phục vụ (Ca 4 tiếng: 06:00 - 10:00)' };
+  }
+  return { startTime: '05:00', endTime: '10:00', hours: SERVICE_5H_SHIFT_HOURS, label: 'Phục vụ (Ca 5 tiếng: 05:00 - 10:00)' };
 }
 
 /**
  * Tính số ngày làm tròn ca và số giờ lẻ dựa trên tổng số giờ làm việc
  * Ví dụ:
- * - Chef (8h): 20 giờ -> 2 ngày 4 tiếng (20 / 8 = 2 dư 4)
- * - Chef (8h): 24 giờ -> 3 ngày 0 tiếng (24 / 8 = 3 dư 0)
+ * - Chef (7h): 20 giờ -> 2 ngày 6 tiếng (20 / 7 = 2 dư 6)
  * - Phục vụ (5h): 14 giờ -> 2 ngày 4 tiếng (14 / 5 = 2 dư 4)
+ * - Phục vụ (4h): 15 giờ -> 3 ngày 3 tiếng (15 / 4 = 3 dư 3)
  */
 export function calculateWorkSummaryFromHours(totalHours = 0, standardHours = 5) {
   const std = Number(standardHours) || 5;

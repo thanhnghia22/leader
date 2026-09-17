@@ -306,7 +306,7 @@ export function Attendance() {
                 ))}
 
                 {/* Các cột tổng kết bên phải: Ngày làm, Giờ lẻ, OFF, Tạm ứng */}
-                <th className="summary-col col-work" title="Số ngày làm quy đổi đủ ca chuẩn (Chef 8h / Phục vụ 5h)">
+                <th className="summary-col col-work" title="Số ngày làm quy đổi đủ ca chuẩn (Chef 7h / Phục vụ 5h / Phục vụ 4h)">
                   Ngày làm
                 </th>
                 <th className="summary-col col-extra-hours" title="Tổng số giờ lẻ (dư sau quy đổi ngày làm)">
@@ -376,14 +376,18 @@ export function Attendance() {
                             style={{
                               fontSize: '0.7rem',
                               fontWeight: 600,
-                              color: isChef ? '#c2410c' : '#0369a1',
-                              backgroundColor: isChef ? '#ffedd5' : '#e0f2fe',
+                              color: isChef ? '#c2410c' : stdHours === 4 ? '#6d28d9' : '#0369a1',
+                              backgroundColor: isChef ? '#ffedd5' : stdHours === 4 ? '#ede9fe' : '#e0f2fe',
                               padding: '1px 6px',
                               borderRadius: '4px',
                               width: 'fit-content'
                             }}
                           >
-                            {isChef ? 'Chef (8h: 2h-10h)' : 'Phục vụ (5h: 5h-10h)'}
+                            {isChef
+                              ? 'Chef (7h: 3h-10h)'
+                              : stdHours === 4
+                              ? 'Phục vụ (4h: 6h-10h)'
+                              : 'Phục vụ (5h: 5h-10h)'}
                           </span>
                         </div>
                       </td>
@@ -466,20 +470,31 @@ export function Attendance() {
         onClose={() => setEditModalOpen(false)}
         title={
           selectedCell?.employee ? (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
               <span>Chấm công: {selectedCell.employee.name} ({selectedCell.employee.code})</span>
-              <span
-                style={{
-                  fontSize: '0.75rem',
-                  fontWeight: 600,
-                  color: getStandardShiftHours(selectedCell.employee.position) === CHEF_SHIFT_HOURS ? '#c2410c' : '#0369a1',
-                  backgroundColor: getStandardShiftHours(selectedCell.employee.position) === CHEF_SHIFT_HOURS ? '#ffedd5' : '#e0f2fe',
-                  padding: '2px 8px',
-                  borderRadius: '4px'
-                }}
-              >
-                {getStandardShiftHours(selectedCell.employee.position) === CHEF_SHIFT_HOURS ? '👨‍🍳 Chef (Ca 8h: 02:00 - 10:00)' : '🛎️ Phục vụ (Ca 5h: 05:00 - 10:00)'}
-              </span>
+              {(() => {
+                const std = getStandardShiftHours(selectedCell.employee.position);
+                const isChefEmp = std === CHEF_SHIFT_HOURS;
+                const is4hEmp = std === 4;
+                return (
+                  <span
+                    style={{
+                      fontSize: '0.75rem',
+                      fontWeight: 600,
+                      color: isChefEmp ? '#c2410c' : is4hEmp ? '#6d28d9' : '#0369a1',
+                      backgroundColor: isChefEmp ? '#ffedd5' : is4hEmp ? '#ede9fe' : '#e0f2fe',
+                      padding: '2px 8px',
+                      borderRadius: '4px'
+                    }}
+                  >
+                    {isChefEmp
+                      ? '👨‍🍳 Chef (Ca 7h: 03:00 - 10:00)'
+                      : is4hEmp
+                      ? '🛎️ Phục vụ (Ca 4h: 06:00 - 10:00)'
+                      : '🛎️ Phục vụ (Ca 5h: 05:00 - 10:00)'}
+                  </span>
+                );
+              })()}
             </div>
           ) : 'Chấm công'
         }
@@ -511,78 +526,195 @@ export function Attendance() {
             </span>
           </div>
 
-          {/* 3 Nút chọn trạng thái ca làm việc */}
-          <div className="status-selector-grid-three">
-            <button
-              type="button"
-              className={`status-choice-btn btn-work-choice ${
-                cellForm.status === 'full' ? 'selected' : ''
-              }`}
-              onClick={() => {
-                const std = getStandardShiftHours(selectedCell?.employee?.position);
-                const times = getDefaultShiftTimes(selectedCell?.employee?.position);
-                setCellForm({
-                  ...cellForm,
-                  status: 'full',
-                  workHours: std,
-                  startTime: times.startTime,
-                  endTime: times.endTime,
-                });
-              }}
-            >
-              <UserCheck size={20} />
-              <div>
-                <strong>✓ Làm đủ ca {getStandardShiftHours(selectedCell?.employee?.position)} tiếng</strong>
-                <span>Tính 1 ca chuẩn ({getStandardShiftHours(selectedCell?.employee?.position)}h)</span>
-              </div>
-            </button>
+          {(() => {
+            const empStd = getStandardShiftHours(selectedCell?.employee?.position);
+            const isChefEmp = empStd === CHEF_SHIFT_HOURS;
 
-            <button
-              type="button"
-              className={`status-choice-btn btn-partial-choice ${
-                cellForm.status === 'partial' ? 'selected' : ''
-              }`}
-              onClick={() => {
-                const std = getStandardShiftHours(selectedCell?.employee?.position);
-                const times = getDefaultShiftTimes(selectedCell?.employee?.position);
-                setCellForm({
-                  ...cellForm,
-                  status: 'partial',
-                  workHours: cellForm.workHours || (std - 1),
-                  startTime: cellForm.startTime || times.startTime,
-                  endTime: cellForm.endTime || times.endTime,
-                  note: cellForm.note || '',
-                });
-              }}
-            >
-              <Clock size={20} />
-              <div>
-                <strong>⏰ Giờ lẻ / Về sớm / Tăng ca</strong>
-                <span>Nhập số giờ làm thực tế</span>
-              </div>
-            </button>
+            if (isChefEmp) {
+              const isChefFullSelected = cellForm.status === 'full' || (cellForm.status === 'partial' && Number(cellForm.workHours) === 7 && cellForm.startTime === '03:00');
+              const isChefPartialSelected = cellForm.status === 'partial' && !isChefFullSelected;
+              const isChefOffSelected = cellForm.status === 'off';
 
-            <button
-              type="button"
-              className={`status-choice-btn btn-off-choice ${
-                cellForm.status === 'off' ? 'selected' : ''
-              }`}
-              onClick={() =>
-                setCellForm({
-                  ...cellForm,
-                  status: 'off',
-                  workHours: 0,
-                  note: cellForm.note || 'Nghỉ theo yêu cầu',
-                })
-              }
-            >
-              <UserX size={20} />
-              <div>
-                <strong>✕ OFF Nghỉ</strong>
-                <span>Báo nghỉ ngày này</span>
+              return (
+                <div className="status-selector-grid-three">
+                  <button
+                    type="button"
+                    className={`status-choice-btn btn-work-choice ${isChefFullSelected ? 'selected' : ''}`}
+                    onClick={() => {
+                      setCellForm({
+                        ...cellForm,
+                        status: 'full',
+                        workHours: 7,
+                        startTime: '03:00',
+                        endTime: '10:00',
+                        note: '',
+                      });
+                    }}
+                  >
+                    <UserCheck size={20} />
+                    <div>
+                      <strong>✓ Ca 3h-10h (7 tiếng)</strong>
+                      <span>Tính 1 ca chuẩn Chef (7h)</span>
+                    </div>
+                  </button>
+
+                  <button
+                    type="button"
+                    className={`status-choice-btn btn-partial-choice ${isChefPartialSelected ? 'selected' : ''}`}
+                    onClick={() => {
+                      setCellForm({
+                        ...cellForm,
+                        status: 'partial',
+                        workHours: cellForm.workHours && Number(cellForm.workHours) !== 7 ? cellForm.workHours : 6,
+                        startTime: cellForm.startTime || '03:00',
+                        endTime: cellForm.endTime || '09:00',
+                        note: cellForm.note || '',
+                      });
+                    }}
+                  >
+                    <Clock size={20} />
+                    <div>
+                      <strong>⏰ Giờ lẻ / Tăng ca</strong>
+                      <span>Nhập số giờ làm thực tế</span>
+                    </div>
+                  </button>
+
+                  <button
+                    type="button"
+                    className={`status-choice-btn btn-off-choice ${isChefOffSelected ? 'selected' : ''}`}
+                    onClick={() =>
+                      setCellForm({
+                        ...cellForm,
+                        status: 'off',
+                        workHours: 0,
+                        note: cellForm.note || 'Nghỉ theo yêu cầu',
+                      })
+                    }
+                  >
+                    <UserX size={20} />
+                    <div>
+                      <strong>✕ OFF Nghỉ</strong>
+                      <span>Báo nghỉ ngày này</span>
+                    </div>
+                  </button>
+                </div>
+              );
+            }
+
+            // Phục vụ: 4 nút chọn (Ca 5h-10h, Ca 6h-10h, Giờ lẻ / Tăng ca, OFF)
+            const isCa5Selected = cellForm.status !== 'off' && ((cellForm.status === 'full' && empStd === 5) || (Number(cellForm.workHours) === 5 && cellForm.startTime === '05:00'));
+            const isCa6Selected = cellForm.status !== 'off' && ((cellForm.status === 'full' && empStd === 4) || (Number(cellForm.workHours) === 4 && cellForm.startTime === '06:00'));
+            const isCustomSelected = cellForm.status === 'partial' && !isCa5Selected && !isCa6Selected;
+            const isOffSelected = cellForm.status === 'off';
+
+            return (
+              <div className="status-selector-grid-four">
+                <button
+                  type="button"
+                  className={`status-choice-btn btn-work-choice ${isCa5Selected ? 'selected' : ''}`}
+                  onClick={() => {
+                    if (empStd === 5) {
+                      setCellForm({
+                        ...cellForm,
+                        status: 'full',
+                        workHours: 5,
+                        startTime: '05:00',
+                        endTime: '10:00',
+                        note: '',
+                      });
+                    } else {
+                      setCellForm({
+                        ...cellForm,
+                        status: 'partial',
+                        workHours: 5,
+                        startTime: '05:00',
+                        endTime: '10:00',
+                        note: 'Ca 5h-10h (5 tiếng)',
+                      });
+                    }
+                  }}
+                >
+                  <UserCheck size={20} />
+                  <div>
+                    <strong>✓ Ca 5h-10h (5 tiếng)</strong>
+                    <span>{empStd === 5 ? '1 ca chuẩn (5h)' : '5 tiếng làm việc'}</span>
+                  </div>
+                </button>
+
+                <button
+                  type="button"
+                  className={`status-choice-btn btn-work-choice ${isCa6Selected ? 'selected' : ''}`}
+                  onClick={() => {
+                    if (empStd === 4) {
+                      setCellForm({
+                        ...cellForm,
+                        status: 'full',
+                        workHours: 4,
+                        startTime: '06:00',
+                        endTime: '10:00',
+                        note: '',
+                      });
+                    } else {
+                      setCellForm({
+                        ...cellForm,
+                        status: 'partial',
+                        workHours: 4,
+                        startTime: '06:00',
+                        endTime: '10:00',
+                        note: 'Ca 6h-10h (4 tiếng)',
+                      });
+                    }
+                  }}
+                >
+                  <UserCheck size={20} />
+                  <div>
+                    <strong>✓ Ca 6h-10h (4 tiếng)</strong>
+                    <span>{empStd === 4 ? '1 ca chuẩn (4h)' : '4 tiếng làm việc'}</span>
+                  </div>
+                </button>
+
+                <button
+                  type="button"
+                  className={`status-choice-btn btn-partial-choice ${isCustomSelected ? 'selected' : ''}`}
+                  onClick={() => {
+                    setCellForm({
+                      ...cellForm,
+                      status: 'partial',
+                      workHours: cellForm.workHours && ![4, 5].includes(Number(cellForm.workHours)) ? cellForm.workHours : 3,
+                      startTime: cellForm.startTime || '06:00',
+                      endTime: cellForm.endTime || '09:00',
+                      note: cellForm.note || '',
+                    });
+                  }}
+                >
+                  <Clock size={20} />
+                  <div>
+                    <strong>⏰ Giờ lẻ / Tăng ca</strong>
+                    <span>Nhập số giờ khác</span>
+                  </div>
+                </button>
+
+                <button
+                  type="button"
+                  className={`status-choice-btn btn-off-choice ${isOffSelected ? 'selected' : ''}`}
+                  onClick={() =>
+                    setCellForm({
+                      ...cellForm,
+                      status: 'off',
+                      workHours: 0,
+                      note: cellForm.note || 'Nghỉ theo yêu cầu',
+                    })
+                  }
+                >
+                  <UserX size={20} />
+                  <div>
+                    <strong>✕ OFF Nghỉ</strong>
+                    <span>Báo nghỉ ngày này</span>
+                  </div>
+                </button>
               </div>
-            </button>
-          </div>
+            );
+          })()}
 
           {/* Nội dung tương ứng theo lựa chọn */}
           {cellForm.status === 'full' && (
@@ -590,7 +722,7 @@ export function Attendance() {
               <div className="info-notice">
                 <Info size={16} className="text-success" />
                 <span>
-                  Làm đủ ca chuẩn {getStandardShiftHours(selectedCell?.employee?.position)} tiếng ({getDefaultShiftTimes(selectedCell?.employee?.position).startTime} - {getDefaultShiftTimes(selectedCell?.employee?.position).endTime}).
+                  Làm đủ ca chuẩn {cellForm.workHours || getStandardShiftHours(selectedCell?.employee?.position)} tiếng ({cellForm.startTime || getDefaultShiftTimes(selectedCell?.employee?.position).startTime} - {cellForm.endTime || getDefaultShiftTimes(selectedCell?.employee?.position).endTime}).
                 </span>
               </div>
               <Input
@@ -608,8 +740,8 @@ export function Attendance() {
                 <Clock size={16} className="text-warning" />
                 <span>
                   {getStandardShiftHours(selectedCell?.employee?.position) === CHEF_SHIFT_HOURS
-                    ? 'Chef ca 8h (02:00 - 10:00): Ví dụ về sớm 9h tính 7 tiếng (hệ thống tự động bù trừ vào tổng công).'
-                    : 'Phục vụ ca 5h (05:00 - 10:00): Ví dụ về sớm 9h tính 4 tiếng (hệ thống tự động bù trừ vào tổng công).'}
+                    ? 'Chef ca 7h (03:00 - 10:00): Nhập số giờ làm thực tế (hệ thống tự động cộng dồn và tính theo ca chuẩn 7h).'
+                    : 'Phục vụ: Hệ thống tự động cộng dồn số giờ làm thực tế và quy đổi theo ca chuẩn của nhân viên.'}
                 </span>
               </div>
 
@@ -644,7 +776,7 @@ export function Attendance() {
               </div>
 
               <Input
-                label="Ghi chú (Ví dụ: Về sớm 1h, Tăng ca 3h-11h...)"
+                label="Ghi chú (Ví dụ: Ca 6h-10h, Về sớm 1h, Tăng ca...)"
                 placeholder="Ví dụ: Về sớm 1h, làm thêm giờ..."
                 value={cellForm.note}
                 onChange={(e) => setCellForm({ ...cellForm, note: e.target.value })}

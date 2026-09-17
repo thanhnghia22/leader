@@ -190,12 +190,24 @@ export function Employees() {
       title: 'Chức vụ',
       dataIndex: 'position',
       render: (pos) => {
-        const isChef = String(pos || '').toLowerCase().includes('chef');
-        return isChef ? (
-          <span style={{ backgroundColor: '#ffedd5', color: '#c2410c', fontWeight: 600, padding: '4px 10px', borderRadius: '6px', fontSize: '0.8rem', display: 'inline-block' }}>
-            👨‍🍳 Chef (Ca 8h: 2h-10h)
-          </span>
-        ) : (
+        const p = String(pos || '').toLowerCase();
+        const isChef = p.includes('chef') || p.includes('bếp');
+        const isService4h = p.includes('6h') || p.includes('4h');
+        if (isChef) {
+          return (
+            <span style={{ backgroundColor: '#ffedd5', color: '#c2410c', fontWeight: 600, padding: '4px 10px', borderRadius: '6px', fontSize: '0.8rem', display: 'inline-block' }}>
+              👨‍🍳 Chef (Ca 7h: 3h-10h)
+            </span>
+          );
+        }
+        if (isService4h) {
+          return (
+            <span style={{ backgroundColor: '#ede9fe', color: '#6d28d9', fontWeight: 600, padding: '4px 10px', borderRadius: '6px', fontSize: '0.8rem', display: 'inline-block' }}>
+              🛎️ Phục vụ (Ca 4h: 6h-10h)
+            </span>
+          );
+        }
+        return (
           <span style={{ backgroundColor: '#e0f2fe', color: '#0369a1', fontWeight: 600, padding: '4px 10px', borderRadius: '6px', fontSize: '0.8rem', display: 'inline-block' }}>
             🛎️ Phục vụ (Ca 5h: 5h-10h)
           </span>
@@ -366,13 +378,16 @@ export function Employees() {
                 backgroundColor: '#fff'
               }}
             >
-              <option value="Chef">👨‍🍳 Chef (Ca chuẩn 8 tiếng: 02:00 - 10:00)</option>
-              <option value="Phục vụ">🛎️ Phục vụ (Ca chuẩn 5 tiếng: 05:00 - 10:00)</option>
+              <option value="Chef">👨‍🍳 Chef (Ca chuẩn 7 tiếng: 03:00 - 10:00)</option>
+              <option value="Phục vụ (5h-10h)">🛎️ Phục vụ (Ca chuẩn 5 tiếng: 05:00 - 10:00)</option>
+              <option value="Phục vụ (6h-10h)">🛎️ Phục vụ (Ca chuẩn 4 tiếng: 06:00 - 10:00)</option>
             </select>
             <span style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '4px', display: 'block' }}>
               {formData.position === 'Chef'
-                ? '• Chef: ca chuẩn 8h/ngày (02:00 - 10:00). Lương giờ = Lương ngày / 8'
-                : '• Phục vụ: ca chuẩn 5h/ngày (05:00 - 10:00). Lương giờ = Lương ngày / 5'}
+                ? '• Chef: ca chuẩn 7h/ngày (03:00 - 10:00). Lương giờ = Lương ngày / 7'
+                : (formData.position?.includes('6h')
+                  ? '• Phục vụ (6h-10h): ca chuẩn 4h/ngày (06:00 - 10:00). Lương giờ = Lương ngày / 4'
+                  : '• Phục vụ (5h-10h): ca chuẩn 5h/ngày (05:00 - 10:00). Lương giờ = Lương ngày / 5')}
             </span>
           </div>
 

@@ -19,7 +19,7 @@ const INITIAL_EMPLOYEES = [
     code: 'NV002',
     name: 'Trần Thị B',
     phone: '0912345678',
-    position: 'Phục vụ',
+    position: 'Phục vụ (5h-10h)',
     dailySalary: 300000,
     status: 'active',
     createdAt: '2026-02-01'
@@ -39,7 +39,7 @@ const INITIAL_EMPLOYEES = [
     code: 'NV004',
     name: 'Phạm Minh D',
     phone: '0934567890',
-    position: 'Phục vụ',
+    position: 'Phục vụ (6h-10h)',
     dailySalary: 320000,
     status: 'active',
     createdAt: '2026-03-01'
@@ -49,7 +49,7 @@ const INITIAL_EMPLOYEES = [
     code: 'NV005',
     name: 'Hoàng Thị E',
     phone: '0945678901',
-    position: 'Phục vụ',
+    position: 'Phục vụ (5h-10h)',
     dailySalary: 300000,
     status: 'active',
     createdAt: '2026-03-15'
@@ -200,12 +200,14 @@ export function initLocalStorage() {
   } else {
     try {
       const emps = JSON.parse(existingEmp);
-      // Chuẩn hóa chức vụ: chỉ gồm Chef hoặc Phục vụ
+      // Chuẩn hóa chức vụ: Chef, Phục vụ (5h-10h) hoặc Phục vụ (6h-10h)
       const normalized = emps.map((emp) => {
         const p = String(emp.position || '').toLowerCase();
-        let pos = 'Phục vụ';
+        let pos = 'Phục vụ (5h-10h)';
         if (p.includes('chef') || p.includes('bếp') || p.includes('trưởng') || p.includes('kỹ thuật') || p.includes('vận hành')) {
           pos = 'Chef';
+        } else if (p.includes('6h') || p.includes('4h')) {
+          pos = 'Phục vụ (6h-10h)';
         }
         return { ...emp, position: pos };
       });
