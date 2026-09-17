@@ -357,10 +357,12 @@ export function EmployeeDetail() {
             </Badge>
           </div>
           <div className="profile-details-grid">
-            <div className="profile-info-item">
-              <Phone size={16} />
-              <span>{employee.phone}</span>
-            </div>
+            {employee.phone ? (
+              <div className="profile-info-item">
+                <Phone size={16} />
+                <span>{employee.phone}</span>
+              </div>
+            ) : null}
             <div className="profile-info-item">
               <Briefcase size={16} />
               <span>

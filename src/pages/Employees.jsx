@@ -5,7 +5,6 @@ import {
   Edit2,
   Trash2,
   Eye,
-  Phone,
   Briefcase,
   DollarSign,
   User,
@@ -106,11 +105,6 @@ export function Employees() {
   const validateForm = () => {
     const errors = {};
     if (!formData.name.trim()) errors.name = 'Vui lòng nhập họ và tên';
-    if (!formData.phone.trim()) {
-      errors.phone = 'Vui lòng nhập số điện thoại';
-    } else if (!/^[0-9]{9,11}$/.test(formData.phone.replace(/\s+/g, ''))) {
-      errors.phone = 'Số điện thoại không hợp lệ (9 - 11 số)';
-    }
     if (!formData.position.trim()) errors.position = 'Vui lòng nhập chức vụ';
     if (!formData.dailySalary || Number(formData.dailySalary) <= 0) {
       errors.dailySalary = 'Lương/ngày phải lớn hơn 0';
@@ -180,11 +174,6 @@ export function Employees() {
           </div>
         </div>
       ),
-    },
-    {
-      title: 'Số điện thoại',
-      dataIndex: 'phone',
-      render: (phone) => <span>{phone}</span>,
     },
     {
       title: 'Chức vụ',
@@ -349,16 +338,6 @@ export function Employees() {
             icon={User}
             required
             error={formErrors.name}
-          />
-
-          <Input
-            label="Số điện thoại"
-            placeholder="Ví dụ: 0901234567"
-            value={formData.phone}
-            onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-            icon={Phone}
-            required
-            error={formErrors.phone}
           />
 
           <div className="input-group-custom" style={{ marginBottom: '16px' }}>
